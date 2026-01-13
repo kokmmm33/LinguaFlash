@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.tauri.app/config/2/capability",
+  "identifier": "main-capability",
+  "description": "Main window capability",
+  "windows": ["main", "popup"],
+  "permissions": [
+    "core:default",
+    "sql:default",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "global-shortcut:default",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "clipboard-manager:default",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text",
+    "shell:default"
+  ]
+}

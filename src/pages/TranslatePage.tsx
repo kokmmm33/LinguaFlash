@@ -3,9 +3,11 @@ import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { translate } from '../services/translation';
 import { useSettingsStore } from '../stores/settingsStore';
+import { useHistoryStore } from '../stores/historyStore';
 
 export function TranslatePage() {
   const { defaultSourceLang, defaultTargetLang, getDefaultEngine } = useSettingsStore();
+  const { addRecord } = useHistoryStore();
 
   const [sourceText, setSourceText] = useState('');
   const [targetText, setTargetText] = useState('');
@@ -33,6 +35,15 @@ export function TranslatePage() {
         target_lang: targetLang,
       });
       setTargetText(response.translated_text);
+
+      // 保存历史记录
+      await addRecord({
+        source_text: sourceText,
+        translated_text: response.translated_text,
+        source_lang: sourceLang,
+        target_lang: targetLang,
+        engine: engine.engine_type,
+      });
     } catch (e) {
       setError(e as string);
       setTargetText('');

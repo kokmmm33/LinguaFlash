@@ -1,20 +1,44 @@
 import { useState } from 'react';
 import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { translate } from '../services/translation';
+import { useSettingsStore } from '../stores/settingsStore';
 
 export function TranslatePage() {
+  const { defaultSourceLang, defaultTargetLang, getDefaultEngine } = useSettingsStore();
+
   const [sourceText, setSourceText] = useState('');
   const [targetText, setTargetText] = useState('');
-  const [sourceLang, setSourceLang] = useState('auto');
-  const [targetLang, setTargetLang] = useState('zh');
+  const [sourceLang, setSourceLang] = useState(defaultSourceLang);
+  const [targetLang, setTargetLang] = useState(defaultTargetLang);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) return;
+
+    const engine = getDefaultEngine();
+    if (!engine) {
+      setError('请先配置翻译引擎');
+      return;
+    }
+
     setIsLoading(true);
-    // TODO: 调用翻译 API
-    setTargetText('翻译结果将显示在这里');
-    setIsLoading(false);
+    setError(null);
+
+    try {
+      const response = await translate(engine, {
+        text: sourceText,
+        source_lang: sourceLang,
+        target_lang: targetLang,
+      });
+      setTargetText(response.translated_text);
+    } catch (e) {
+      setError(e as string);
+      setTargetText('');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSwapLanguages = () => {
@@ -66,6 +90,13 @@ export function TranslatePage() {
       >
         {isLoading ? '翻译中...' : '翻译'}
       </button>
+
+      {/* 错误提示 */}
+      {error && (
+        <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm">
+          {error}
+        </div>
+      )}
 
       {/* 结果区域 */}
       <div className="flex-1 relative">

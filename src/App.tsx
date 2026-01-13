@@ -2,14 +2,39 @@ import { useEffect, useState } from 'react';
 import { Layout } from './components/Layout';
 import { TranslatePage } from './pages/TranslatePage';
 import { HistoryPage } from './pages/HistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { initDatabase } from './services/database';
+import { useSettingsStore } from './stores/settingsStore';
 
 function App() {
   const [isDbReady, setIsDbReady] = useState(false);
+  const { theme } = useSettingsStore();
 
   useEffect(() => {
     initDatabase().then(() => setIsDbReady(true));
   }, []);
+
+  // 主题切换逻辑
+  useEffect(() => {
+    const applyTheme = (isDark: boolean) => {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      applyTheme(mediaQuery.matches);
+
+      const handler = (e: MediaQueryListEvent) => applyTheme(e.matches);
+      mediaQuery.addEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    } else {
+      applyTheme(theme === 'dark');
+    }
+  }, [theme]);
 
   if (!isDbReady) {
     return (
@@ -25,7 +50,7 @@ function App() {
         <div className="h-full">
           {activeTab === 'translate' && <TranslatePage />}
           {activeTab === 'history' && <HistoryPage />}
-          {activeTab === 'settings' && <div>设置页面</div>}
+          {activeTab === 'settings' && <SettingsPage />}
         </div>
       )}
     </Layout>

@@ -14,7 +14,14 @@
       "Bash(pkill:*)",
       "Bash(git -C /Users/joseph/Desktop/TTime status)",
       "Bash(git -C /Users/joseph/Desktop/TTime log --oneline -3)",
-      "Bash(git -C /Users/joseph/Desktop/TTime add .)"
+      "Bash(git -C /Users/joseph/Desktop/TTime add .)",
+      "Bash(git -C /Users/joseph/Desktop/TTime commit -m \"$\\(cat <<''EOF''\nfeat: initialize Tauri + React + TypeScript project with Tailwind CSS\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(cargo check:*)",
+      "Bash(rustc:*)",
+      "Bash(cargo --version:*)",
+      "Bash(rustup update:*)",
+      "Bash(python3:*)",
+      "Bash(npm run tauri:*)"
     ]
   }
 }

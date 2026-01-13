@@ -12,6 +12,7 @@ export interface TranslationResponse {
 }
 
 export interface EngineConfig {
+  id: string;
   engine_type: 'ollama' | 'glm';
   endpoint?: string;
   model?: string;

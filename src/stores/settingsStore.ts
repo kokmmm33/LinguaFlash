@@ -9,7 +9,7 @@ interface SettingsState {
   defaultTargetLang: string;
   theme: 'light' | 'dark' | 'system';
 
-  addEngine: (engine: EngineConfig) => void;
+  addEngine: (engine: Omit<EngineConfig, 'id'>) => void;
   removeEngine: (index: number) => void;
   updateEngine: (index: number, engine: EngineConfig) => void;
   setDefaultEngine: (index: number) => void;
@@ -23,6 +23,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set, get) => ({
       engines: [
         {
+          id: 'default-ollama',
           engine_type: 'ollama',
           endpoint: 'http://localhost:11434',
           model: 'qwen2',
@@ -34,16 +35,21 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'system',
 
       addEngine: (engine) =>
-        set((state) => ({ engines: [...state.engines, engine] })),
+        set((state) => ({
+          engines: [...state.engines, { ...engine, id: crypto.randomUUID() }],
+        })),
 
       removeEngine: (index) =>
-        set((state) => ({
-          engines: state.engines.filter((_, i) => i !== index),
-          defaultEngineIndex:
-            state.defaultEngineIndex >= index
-              ? Math.max(0, state.defaultEngineIndex - 1)
-              : state.defaultEngineIndex,
-        })),
+        set((state) => {
+          if (state.engines.length <= 1) return state;
+          return {
+            engines: state.engines.filter((_, i) => i !== index),
+            defaultEngineIndex:
+              state.defaultEngineIndex >= index
+                ? Math.max(0, state.defaultEngineIndex - 1)
+                : state.defaultEngineIndex,
+          };
+        }),
 
       updateEngine: (index, engine) =>
         set((state) => ({

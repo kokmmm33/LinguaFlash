@@ -39,7 +39,7 @@ export async function addHistory(record: Omit<HistoryRecord, 'id' | 'created_at'
     [record.source_text, record.translated_text, record.source_lang, record.target_lang, record.engine]
   );
 
-  return result.lastInsertId;
+  return result.lastInsertId ?? 0;
 }
 
 export async function getHistory(limit = 100, offset = 0): Promise<HistoryRecord[]> {

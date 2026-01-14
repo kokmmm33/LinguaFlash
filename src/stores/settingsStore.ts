@@ -2,12 +2,23 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { EngineConfig } from '../services/translation';
 
+interface ShortcutConfig {
+  translate: string;
+  showWindow: string;
+}
+
+const DEFAULT_SHORTCUTS: ShortcutConfig = {
+  translate: 'CommandOrControl+Shift+T',
+  showWindow: 'CommandOrControl+Shift+Space',
+};
+
 interface SettingsState {
   engines: EngineConfig[];
   defaultEngineIndex: number;
   defaultSourceLang: string;
   defaultTargetLang: string;
   theme: 'light' | 'dark' | 'system';
+  shortcuts: ShortcutConfig;
 
   addEngine: (engine: Omit<EngineConfig, 'id'>) => void;
   removeEngine: (index: number) => void;
@@ -16,6 +27,8 @@ interface SettingsState {
   setDefaultLanguages: (source: string, target: string) => void;
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   getDefaultEngine: () => EngineConfig | null;
+  setShortcut: (key: keyof ShortcutConfig, value: string) => void;
+  resetShortcuts: () => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -33,6 +46,7 @@ export const useSettingsStore = create<SettingsState>()(
       defaultSourceLang: 'auto',
       defaultTargetLang: 'zh',
       theme: 'system',
+      shortcuts: DEFAULT_SHORTCUTS,
 
       addEngine: (engine) =>
         set((state) => ({
@@ -67,6 +81,13 @@ export const useSettingsStore = create<SettingsState>()(
         const state = get();
         return state.engines[state.defaultEngineIndex] || null;
       },
+
+      setShortcut: (key, value) =>
+        set((state) => ({
+          shortcuts: { ...state.shortcuts, [key]: value },
+        })),
+
+      resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
     }),
     {
       name: 'ttime-settings',

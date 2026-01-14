@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSettingsStore } from '../stores/settingsStore';
 import { EngineSettings } from '../components/EngineSettings';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { ShortcutInput } from '../components/ShortcutInput';
 import { clearHistory } from '../services/database';
 
 export function SettingsPage() {
@@ -11,12 +12,14 @@ export function SettingsPage() {
     defaultSourceLang,
     defaultTargetLang,
     theme,
+    shortcuts,
     addEngine,
     removeEngine,
     updateEngine,
     setDefaultEngine,
     setDefaultLanguages,
     setTheme,
+    setShortcut,
   } = useSettingsStore();
 
   const [confirmClear, setConfirmClear] = useState(false);
@@ -156,6 +159,33 @@ export function SettingsPage() {
             >
               跟随系统
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 快捷键区域 */}
+      <section>
+        <h2 className="text-lg font-semibold mb-3">快捷键</h2>
+        <div className="p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border)] space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm">划词翻译</span>
+            <ShortcutInput
+              value={shortcuts.translate}
+              onChange={(v) => setShortcut('translate', v)}
+              onReset={() => setShortcut('translate', 'CommandOrControl+Shift+T')}
+              otherShortcut={shortcuts.showWindow}
+              defaultValue="CommandOrControl+Shift+T"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">显示主窗口</span>
+            <ShortcutInput
+              value={shortcuts.showWindow}
+              onChange={(v) => setShortcut('showWindow', v)}
+              onReset={() => setShortcut('showWindow', 'CommandOrControl+Shift+Space')}
+              otherShortcut={shortcuts.translate}
+              defaultValue="CommandOrControl+Shift+Space"
+            />
           </div>
         </div>
       </section>

@@ -1,5 +1,6 @@
 use crate::clipboard::get_selected_text;
-use tauri::{AppHandle, Emitter, Manager};
+use crate::popup;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 
 /// 注册全局快捷键
@@ -16,11 +17,8 @@ pub fn register_shortcuts(app: &AppHandle) -> Result<(), String> {
             let app = app_for_translate.clone();
             tauri::async_runtime::spawn(async move {
                 if let Ok(text) = get_selected_text(&app).await {
-                    if let Some(window) = app.get_webview_window("main") {
-                        let _ = window.emit("translate-selection", text);
-                        let _ = window.show();
-                        let _ = window.set_focus();
-                    }
+                    // 使用悬浮窗显示翻译结果
+                    let _ = popup::show_popup(&app, text).await;
                 }
             });
         })

@@ -1,4 +1,5 @@
 mod clipboard;
+mod popup;
 mod shortcut;
 mod translation;
 mod tray;
@@ -51,6 +52,11 @@ async fn test_engine_connection(
     }
 }
 
+#[tauri::command]
+async fn close_popup(app: tauri::AppHandle) -> Result<(), String> {
+    popup::close_popup(&app)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let client = Arc::new(Client::new());
@@ -68,7 +74,7 @@ pub fn run() {
             shortcut::register_shortcuts(app.handle())?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![translate, test_engine_connection])
+        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

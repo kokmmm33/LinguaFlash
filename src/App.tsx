@@ -4,15 +4,21 @@ import { TranslatePage } from './pages/TranslatePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { initDatabase } from './services/database';
+import { updateShortcuts } from './services/shortcut';
 import { useSettingsStore } from './stores/settingsStore';
 
 function App() {
   const [isDbReady, setIsDbReady] = useState(false);
-  const { theme } = useSettingsStore();
+  const { theme, shortcuts } = useSettingsStore();
 
   useEffect(() => {
     initDatabase().then(() => setIsDbReady(true));
   }, []);
+
+  // 同步快捷键配置到后端
+  useEffect(() => {
+    updateShortcuts(shortcuts.translate, shortcuts.showWindow).catch(console.error);
+  }, [shortcuts.translate, shortcuts.showWindow]);
 
   // 主题切换逻辑
   useEffect(() => {

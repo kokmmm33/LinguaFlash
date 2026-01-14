@@ -5,9 +5,10 @@ mod translation;
 mod tray;
 
 use reqwest::Client;
-use tauri::State;
+use tauri::{AppHandle, State};
 use std::sync::Arc;
 use translation::{TranslationRequest, TranslationResponse, EngineConfig};
+use shortcut::register_shortcuts;
 
 pub struct AppState {
     pub client: Arc<Client>,
@@ -57,6 +58,15 @@ async fn close_popup(app: tauri::AppHandle) -> Result<(), String> {
     popup::close_popup(&app)
 }
 
+#[tauri::command]
+fn update_shortcuts(
+    app: AppHandle,
+    translate: String,
+    show_window: String,
+) -> Result<(), String> {
+    register_shortcuts(&app, &translate, &show_window)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let client = Arc::new(Client::new());
@@ -70,11 +80,17 @@ pub fn run() {
         .setup(|app| {
             // 创建系统托盘
             tray::create_tray(app.handle())?;
-            // 注册全局快捷键
-            shortcut::register_shortcuts(app.handle())?;
+            // 使用默认快捷键初始化
+            if let Err(e) = register_shortcuts(
+                app.handle(),
+                "CommandOrControl+Shift+T",
+                "CommandOrControl+Shift+Space",
+            ) {
+                eprintln!("注册快捷键失败: {}", e);
+            }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup])
+        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup, update_shortcuts])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

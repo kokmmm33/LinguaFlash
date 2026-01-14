@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
-import { listen } from '@tauri-apps/api/event';
 import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { translate } from '../services/translation';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useHistoryStore } from '../stores/historyStore';
 
-export function TranslatePage() {
+interface TranslatePageProps {
+  pendingText?: string | null;
+  onPendingTextProcessed?: () => void;
+}
+
+export function TranslatePage({ pendingText, onPendingTextProcessed }: TranslatePageProps) {
   const { defaultSourceLang, defaultTargetLang, getDefaultEngine } = useSettingsStore();
   const { addRecord } = useHistoryStore();
 
@@ -54,22 +58,15 @@ export function TranslatePage() {
     }
   }, [sourceLang, targetLang, getDefaultEngine, addRecord]);
 
-  // 监听划词翻译事件
+  // 处理从 App 传递来的划词翻译文本
   useEffect(() => {
-    const unlisten = listen<string>('translate-selection', async (event) => {
-      const text = event.payload;
-      setSourceText(text);
-      try {
-        await doTranslate(text);
-      } catch (e) {
-        console.error('划词翻译失败:', e);
-      }
-    });
-
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [doTranslate]);
+    if (pendingText) {
+      setSourceText(pendingText);
+      doTranslate(pendingText).finally(() => {
+        onPendingTextProcessed?.();
+      });
+    }
+  }, [pendingText, doTranslate, onPendingTextProcessed]);
 
   const handleTranslate = () => {
     doTranslate(sourceText);

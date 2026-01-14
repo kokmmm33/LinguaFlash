@@ -21,7 +21,11 @@
       "Bash(cargo --version:*)",
       "Bash(rustup update:*)",
       "Bash(python3:*)",
-      "Bash(npm run tauri:*)"
+      "Bash(npm run tauri:*)",
+      "Skill(superpowers:executing-plans)",
+      "Skill(superpowers:finishing-a-development-branch)",
+      "Bash(cargo test:*)",
+      "Bash(npm test)"
     ]
   }
 }

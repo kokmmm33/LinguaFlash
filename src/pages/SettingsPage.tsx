@@ -175,6 +175,7 @@ export function SettingsPage() {
               onReset={() => setShortcut('translate', 'CommandOrControl+Shift+T')}
               otherShortcut={shortcuts.showWindow}
               defaultValue="CommandOrControl+Shift+T"
+              allShortcuts={shortcuts}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -185,6 +186,7 @@ export function SettingsPage() {
               onReset={() => setShortcut('showWindow', 'CommandOrControl+Shift+Space')}
               otherShortcut={shortcuts.translate}
               defaultValue="CommandOrControl+Shift+Space"
+              allShortcuts={shortcuts}
             />
           </div>
         </div>
@@ -239,7 +241,7 @@ export function SettingsPage() {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">应用名称</span>
-              <span>TTime</span>
+              <span>Quick Translation</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">版本</span>

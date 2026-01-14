@@ -1,12 +1,12 @@
 [package]
-name = "ttime"
+name = "quick-translation"
 version = "0.1.0"
-description = "TTime - Cross-platform Translation Software"
+description = "Quick Translation - Cross-platform Translation Software"
 authors = ["you"]
 edition = "2021"
 
 [lib]
-name = "ttime_lib"
+name = "quick_translation_lib"
 crate-type = ["staticlib", "cdylib", "lib"]
 
 [build-dependencies]

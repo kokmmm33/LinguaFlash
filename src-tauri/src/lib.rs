@@ -8,7 +8,7 @@ use reqwest::Client;
 use tauri::{AppHandle, State};
 use std::sync::Arc;
 use translation::{TranslationRequest, TranslationResponse, EngineConfig};
-use shortcut::register_shortcuts;
+use shortcut::{register_shortcuts, disable_shortcuts, enable_shortcuts};
 
 pub struct AppState {
     pub client: Arc<Client>,
@@ -67,6 +67,20 @@ fn update_shortcuts(
     register_shortcuts(&app, &translate, &show_window)
 }
 
+#[tauri::command]
+fn pause_shortcuts(app: AppHandle) {
+    disable_shortcuts(&app);
+}
+
+#[tauri::command]
+fn resume_shortcuts(
+    app: AppHandle,
+    translate: String,
+    show_window: String,
+) -> Result<(), String> {
+    enable_shortcuts(&app, &translate, &show_window)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let client = Arc::new(Client::new());
@@ -90,7 +104,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup, update_shortcuts])
+        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup, update_shortcuts, pause_shortcuts, resume_shortcuts])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

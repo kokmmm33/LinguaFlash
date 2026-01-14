@@ -3,9 +3,9 @@ use std::thread;
 use std::time::Duration;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
-/// 获取当前选中的文本
+/// 获取当前选中的文本（同步版本）
 /// 通过模拟复制快捷键，从剪贴板读取选中内容
-pub async fn get_selected_text(app: &tauri::AppHandle) -> Result<String, String> {
+pub fn get_selected_text(app: &tauri::AppHandle) -> Result<String, String> {
     // 保存当前剪贴板内容
     let original = app.clipboard().read_text().ok();
 
@@ -19,7 +19,10 @@ pub async fn get_selected_text(app: &tauri::AppHandle) -> Result<String, String>
             .key(Key::Meta, enigo::Direction::Press)
             .map_err(|e| e.to_string())?;
         enigo
-            .key(Key::Unicode('c'), enigo::Direction::Click)
+            .key(Key::Unicode('c'), enigo::Direction::Press)
+            .map_err(|e| e.to_string())?;
+        enigo
+            .key(Key::Unicode('c'), enigo::Direction::Release)
             .map_err(|e| e.to_string())?;
         enigo
             .key(Key::Meta, enigo::Direction::Release)
@@ -32,7 +35,10 @@ pub async fn get_selected_text(app: &tauri::AppHandle) -> Result<String, String>
             .key(Key::Control, enigo::Direction::Press)
             .map_err(|e| e.to_string())?;
         enigo
-            .key(Key::Unicode('c'), enigo::Direction::Click)
+            .key(Key::Unicode('c'), enigo::Direction::Press)
+            .map_err(|e| e.to_string())?;
+        enigo
+            .key(Key::Unicode('c'), enigo::Direction::Release)
             .map_err(|e| e.to_string())?;
         enigo
             .key(Key::Control, enigo::Direction::Release)

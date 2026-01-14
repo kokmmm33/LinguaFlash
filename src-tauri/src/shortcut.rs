@@ -1,7 +1,6 @@
 use crate::clipboard::get_selected_text;
-use crate::popup;
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 
 // 存储当前注册的快捷键
@@ -122,6 +121,53 @@ fn unregister_all(app: &AppHandle) {
     }
 }
 
+/// 临时禁用所有快捷键（用于快捷键录入时）
+pub fn disable_shortcuts(app: &AppHandle) {
+    let current = CURRENT_SHORTCUTS.lock().unwrap();
+    if let Some((ref translate, ref show)) = *current {
+        let _ = app.global_shortcut().unregister(translate.clone());
+        let _ = app.global_shortcut().unregister(show.clone());
+    }
+}
+
+/// 重新启用快捷键
+pub fn enable_shortcuts(
+    app: &AppHandle,
+    translate_shortcut_str: &str,
+    show_shortcut_str: &str,
+) -> Result<(), String> {
+    // 直接注册，不修改 CURRENT_SHORTCUTS（因为它已经保存了正确的快捷键）
+    let translate_shortcut = parse_shortcut(translate_shortcut_str)?;
+    let show_shortcut = parse_shortcut(show_shortcut_str)?;
+
+    // 注册划词翻译快捷键
+    let app_for_translate = app.clone();
+    app.global_shortcut()
+        .on_shortcut(translate_shortcut, move |_app, _shortcut, _event| {
+            if let Ok(text) = get_selected_text(&app_for_translate) {
+                if let Some(window) = app_for_translate.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                    let _ = window.emit("translate-selection", text);
+                }
+            }
+        })
+        .map_err(|e| format!("注册划词翻译快捷键失败: {}", e))?;
+
+    // 注册显示主窗口快捷键
+    let app_for_show = app.clone();
+    app.global_shortcut()
+        .on_shortcut(show_shortcut, move |_app, _shortcut, _event| {
+            if let Some(window) = app_for_show.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        })
+        .map_err(|e| format!("注册显示窗口快捷键失败: {}", e))?;
+
+    Ok(())
+}
+
 /// 注册快捷键
 pub fn register_shortcuts(
     app: &AppHandle,
@@ -139,12 +185,16 @@ pub fn register_shortcuts(
     let app_for_translate = app.clone();
     app.global_shortcut()
         .on_shortcut(translate_shortcut.clone(), move |_app, _shortcut, _event| {
-            let app = app_for_translate.clone();
-            tauri::async_runtime::spawn(async move {
-                if let Ok(text) = get_selected_text(&app).await {
-                    let _ = popup::show_popup(&app, text).await;
+            // enigo 在 macOS 上必须在主线程调用（使用 CGEvent API）
+            // 快捷键回调本身在主线程上运行，所以直接同步执行
+            if let Ok(text) = get_selected_text(&app_for_translate) {
+                // 显示主窗口并发送翻译事件
+                if let Some(window) = app_for_translate.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                    let _ = window.emit("translate-selection", text);
                 }
-            });
+            }
         })
         .map_err(|e| format!("注册划词翻译快捷键失败: {}", e))?;
 

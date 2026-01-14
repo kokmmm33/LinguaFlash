@@ -1,25 +1,21 @@
-import { useState, ReactNode } from 'react';
-import { TitleBar } from './TitleBar';
+import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 
-type Tab = 'translate' | 'history' | 'settings';
+export type Tab = 'translate' | 'history' | 'settings';
 
 interface LayoutProps {
-  children: (activeTab: Tab) => ReactNode;
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
+  children: ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('translate');
-
+export function Layout({ activeTab, onTabChange, children }: LayoutProps) {
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <TitleBar />
-      <div className="flex-1 flex overflow-hidden">
-        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        <main className="flex-1 overflow-auto p-4">
-          {children(activeTab)}
-        </main>
-      </div>
+    <div className="h-screen flex overflow-hidden">
+      <Sidebar activeTab={activeTab} onTabChange={onTabChange} />
+      <main className="flex-1 overflow-auto p-4">
+        {children}
+      </main>
     </div>
   );
 }

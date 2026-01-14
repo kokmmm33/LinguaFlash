@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { pauseShortcuts, resumeShortcuts } from '../services/shortcut';
 
 interface ShortcutInputProps {
   value: string;
@@ -6,6 +7,7 @@ interface ShortcutInputProps {
   onReset: () => void;
   otherShortcut?: string;
   defaultValue: string;
+  allShortcuts: { translate: string; showWindow: string };
 }
 
 // 解析快捷键字符串为显示格式
@@ -90,7 +92,7 @@ function isReservedShortcut(shortcut: string): boolean {
   return reserved.includes(shortcut);
 }
 
-export function ShortcutInput({ value, onChange, onReset, otherShortcut, defaultValue }: ShortcutInputProps) {
+export function ShortcutInput({ value, onChange, onReset, otherShortcut, defaultValue, allShortcuts }: ShortcutInputProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [tempValue, setTempValue] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +101,16 @@ export function ShortcutInput({ value, onChange, onReset, otherShortcut, default
   const displayValue = tempValue ?? value;
   const hasConflict = otherShortcut && displayValue === otherShortcut;
   const isDefault = value === defaultValue;
+
+  // 开始录入时暂停全局快捷键，结束时恢复
+  useEffect(() => {
+    if (isRecording) {
+      pauseShortcuts().catch(console.error);
+    } else {
+      // 恢复快捷键
+      resumeShortcuts(allShortcuts.translate, allShortcuts.showWindow).catch(console.error);
+    }
+  }, [isRecording, allShortcuts]);
 
   useEffect(() => {
     if (!isRecording) return;

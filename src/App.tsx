@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Layout } from './components/Layout';
+import { listen } from '@tauri-apps/api/event';
+import { Layout, Tab } from './components/Layout';
 import { TranslatePage } from './pages/TranslatePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -9,7 +10,11 @@ import { useSettingsStore } from './stores/settingsStore';
 
 function App() {
   const [isDbReady, setIsDbReady] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('translate');
   const { theme, shortcuts } = useSettingsStore();
+
+  // 用于传递划词翻译文本给 TranslatePage
+  const [pendingText, setPendingText] = useState<string | null>(null);
 
   useEffect(() => {
     initDatabase().then(() => setIsDbReady(true));
@@ -19,6 +24,19 @@ function App() {
   useEffect(() => {
     updateShortcuts(shortcuts.translate, shortcuts.showWindow).catch(console.error);
   }, [shortcuts.translate, shortcuts.showWindow]);
+
+  // 监听划词翻译事件，自动切换到翻译页面
+  useEffect(() => {
+    const unlisten = listen<string>('translate-selection', (event) => {
+      const text = event.payload;
+      setPendingText(text);
+      setActiveTab('translate');
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   // 主题切换逻辑
   useEffect(() => {
@@ -42,6 +60,11 @@ function App() {
     }
   }, [theme]);
 
+  // 清除待处理文本的回调
+  const clearPendingText = () => {
+    setPendingText(null);
+  };
+
   if (!isDbReady) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -51,14 +74,17 @@ function App() {
   }
 
   return (
-    <Layout>
-      {(activeTab) => (
-        <div className="h-full">
-          {activeTab === 'translate' && <TranslatePage />}
-          {activeTab === 'history' && <HistoryPage />}
-          {activeTab === 'settings' && <SettingsPage />}
-        </div>
-      )}
+    <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+      <div className="h-full">
+        {activeTab === 'translate' && (
+          <TranslatePage
+            pendingText={pendingText}
+            onPendingTextProcessed={clearPendingText}
+          />
+        )}
+        {activeTab === 'history' && <HistoryPage />}
+        {activeTab === 'settings' && <SettingsPage />}
+      </div>
     </Layout>
   );
 }

@@ -1,3 +1,5 @@
+mod clipboard;
+mod shortcut;
 mod translation;
 mod tray;
 
@@ -62,6 +64,8 @@ pub fn run() {
         .setup(|app| {
             // 创建系统托盘
             tray::create_tray(app.handle())?;
+            // 注册全局快捷键
+            shortcut::register_shortcuts(app.handle())?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![translate, test_engine_connection])

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { translate } from '../services/translation';
@@ -16,8 +17,9 @@ export function TranslatePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleTranslate = async () => {
-    if (!sourceText.trim()) return;
+  // 执行翻译的核心逻辑
+  const doTranslate = useCallback(async (text: string) => {
+    if (!text.trim()) return;
 
     const engine = getDefaultEngine();
     if (!engine) {
@@ -30,7 +32,7 @@ export function TranslatePage() {
 
     try {
       const response = await translate(engine, {
-        text: sourceText,
+        text: text,
         source_lang: sourceLang,
         target_lang: targetLang,
       });
@@ -38,7 +40,7 @@ export function TranslatePage() {
 
       // 保存历史记录
       await addRecord({
-        source_text: sourceText,
+        source_text: text,
         translated_text: response.translated_text,
         source_lang: sourceLang,
         target_lang: targetLang,
@@ -50,6 +52,27 @@ export function TranslatePage() {
     } finally {
       setIsLoading(false);
     }
+  }, [sourceLang, targetLang, getDefaultEngine, addRecord]);
+
+  // 监听划词翻译事件
+  useEffect(() => {
+    const unlisten = listen<string>('translate-selection', async (event) => {
+      const text = event.payload;
+      setSourceText(text);
+      try {
+        await doTranslate(text);
+      } catch (e) {
+        console.error('划词翻译失败:', e);
+      }
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [doTranslate]);
+
+  const handleTranslate = () => {
+    doTranslate(sourceText);
   };
 
   const handleSwapLanguages = () => {

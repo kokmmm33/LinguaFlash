@@ -27,9 +27,7 @@ function App() {
 
   // 监听划词翻译事件，自动切换到翻译页面
   useEffect(() => {
-    console.log('[DEBUG App] 设置 translate-selection 事件监听器');
     const unlisten = listen<string>('translate-selection', (event) => {
-      console.log('[DEBUG App] 收到 translate-selection 事件:', event.payload);
       const text = event.payload;
       setPendingText(text);
       setActiveTab('translate');

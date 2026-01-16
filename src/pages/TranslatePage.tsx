@@ -75,9 +75,7 @@ export function TranslatePage({ pendingText, onPendingTextProcessed }: Translate
 
   // 处理从 App 传递来的划词翻译文本
   useEffect(() => {
-    console.log('[DEBUG TranslatePage] pendingText 变化:', pendingText);
     if (pendingText) {
-      console.log('[DEBUG TranslatePage] 设置源文本并开始翻译');
       setSourceText(pendingText);
       doTranslate(pendingText).finally(() => {
         onPendingTextProcessed?.();

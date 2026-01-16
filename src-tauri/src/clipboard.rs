@@ -6,11 +6,8 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 /// 获取当前选中的文本（同步版本）
 /// 通过模拟复制快捷键，从剪贴板读取选中内容
 pub fn get_selected_text(app: &tauri::AppHandle) -> Result<String, String> {
-    eprintln!("[DEBUG clipboard] get_selected_text 开始执行");
-
     // 保存当前剪贴板内容
     let original = app.clipboard().read_text().ok();
-    eprintln!("[DEBUG clipboard] 原剪贴板内容: {:?}", original);
 
     // 清空剪贴板，用于检测复制是否成功
     let _ = app.clipboard().write_text(String::new());

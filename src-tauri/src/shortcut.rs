@@ -144,30 +144,13 @@ pub fn enable_shortcuts(
     let app_for_translate = app.clone();
     app.global_shortcut()
         .on_shortcut(translate_shortcut, move |_app, _shortcut, _event| {
-            eprintln!("[DEBUG shortcut] 划词翻译快捷键被触发 (enable_shortcuts)");
-            match get_selected_text(&app_for_translate) {
-                Ok(text) => {
-                    eprintln!("[DEBUG shortcut] 成功获取选中文本: {:?}", text.chars().take(50).collect::<String>());
-                    if let Some(window) = app_for_translate.get_webview_window("main") {
-                        eprintln!("[DEBUG shortcut] 获取到 main 窗口");
-                        match window.show() {
-                            Ok(_) => eprintln!("[DEBUG shortcut] 窗口显示成功"),
-                            Err(e) => eprintln!("[DEBUG shortcut] 窗口显示失败: {}", e),
-                        }
-                        match window.set_focus() {
-                            Ok(_) => eprintln!("[DEBUG shortcut] 窗口聚焦成功"),
-                            Err(e) => eprintln!("[DEBUG shortcut] 窗口聚焦失败: {}", e),
-                        }
-                    }
-                    // 使用 app.emit() 发送全局事件，这样前端可以正确监听
-                    match app_for_translate.emit("translate-selection", text) {
-                        Ok(_) => eprintln!("[DEBUG shortcut] 全局事件 translate-selection 发送成功"),
-                        Err(e) => eprintln!("[DEBUG shortcut] 全局事件发送失败: {}", e),
-                    }
+            if let Ok(text) = get_selected_text(&app_for_translate) {
+                if let Some(window) = app_for_translate.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
                 }
-                Err(e) => {
-                    eprintln!("[DEBUG shortcut] 获取选中文本失败: {}", e);
-                }
+                // 使用 app.emit() 发送全局事件，这样前端可以正确监听
+                let _ = app_for_translate.emit("translate-selection", text);
             }
         })
         .map_err(|e| format!("注册划词翻译快捷键失败: {}", e))?;
@@ -203,33 +186,16 @@ pub fn register_shortcuts(
     let app_for_translate = app.clone();
     app.global_shortcut()
         .on_shortcut(translate_shortcut.clone(), move |_app, _shortcut, _event| {
-            eprintln!("[DEBUG shortcut] 划词翻译快捷键被触发");
             // enigo 在 macOS 上必须在主线程调用（使用 CGEvent API）
             // 快捷键回调本身在主线程上运行，所以直接同步执行
-            match get_selected_text(&app_for_translate) {
-                Ok(text) => {
-                    eprintln!("[DEBUG shortcut] 成功获取选中文本: {:?}", text.chars().take(50).collect::<String>());
-                    // 显示主窗口并发送翻译事件
-                    if let Some(window) = app_for_translate.get_webview_window("main") {
-                        eprintln!("[DEBUG shortcut] 获取到 main 窗口");
-                        match window.show() {
-                            Ok(_) => eprintln!("[DEBUG shortcut] 窗口显示成功"),
-                            Err(e) => eprintln!("[DEBUG shortcut] 窗口显示失败: {}", e),
-                        }
-                        match window.set_focus() {
-                            Ok(_) => eprintln!("[DEBUG shortcut] 窗口聚焦成功"),
-                            Err(e) => eprintln!("[DEBUG shortcut] 窗口聚焦失败: {}", e),
-                        }
-                    }
-                    // 使用 app.emit() 发送全局事件，这样前端可以正确监听
-                    match app_for_translate.emit("translate-selection", text) {
-                        Ok(_) => eprintln!("[DEBUG shortcut] 全局事件 translate-selection 发送成功"),
-                        Err(e) => eprintln!("[DEBUG shortcut] 全局事件发送失败: {}", e),
-                    }
+            if let Ok(text) = get_selected_text(&app_for_translate) {
+                // 显示主窗口并发送翻译事件
+                if let Some(window) = app_for_translate.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
                 }
-                Err(e) => {
-                    eprintln!("[DEBUG shortcut] 获取选中文本失败: {}", e);
-                }
+                // 使用 app.emit() 发送全局事件，这样前端可以正确监听
+                let _ = app_for_translate.emit("translate-selection", text);
             }
         })
         .map_err(|e| format!("注册划词翻译快捷键失败: {}", e))?;

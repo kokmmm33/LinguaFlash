@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { translate } from '../services/translation';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useHistoryStore } from '../stores/historyStore';
+import { useTranslateStore } from '../stores/translateStore';
 
 interface TranslatePageProps {
   pendingText?: string | null;
@@ -11,15 +12,29 @@ interface TranslatePageProps {
 }
 
 export function TranslatePage({ pendingText, onPendingTextProcessed }: TranslatePageProps) {
-  const { defaultSourceLang, defaultTargetLang, getDefaultEngine } = useSettingsStore();
+  const {
+    getDefaultEngine,
+    defaultSourceLang,
+    defaultTargetLang,
+    setDefaultLanguages,
+  } = useSettingsStore();
   const { addRecord } = useHistoryStore();
+  const {
+    sourceText,
+    targetText,
+    isLoading,
+    error,
+    setSourceText,
+    setTargetText,
+    setIsLoading,
+    setError,
+  } = useTranslateStore();
 
-  const [sourceText, setSourceText] = useState('');
-  const [targetText, setTargetText] = useState('');
-  const [sourceLang, setSourceLang] = useState(defaultSourceLang);
-  const [targetLang, setTargetLang] = useState(defaultTargetLang);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // 使用 settingsStore 的语言配置
+  const sourceLang = defaultSourceLang;
+  const targetLang = defaultTargetLang;
+  const setSourceLang = (lang: string) => setDefaultLanguages(lang, targetLang);
+  const setTargetLang = (lang: string) => setDefaultLanguages(sourceLang, lang);
 
   // 执行翻译的核心逻辑
   const doTranslate = useCallback(async (text: string) => {
@@ -60,7 +75,9 @@ export function TranslatePage({ pendingText, onPendingTextProcessed }: Translate
 
   // 处理从 App 传递来的划词翻译文本
   useEffect(() => {
+    console.log('[DEBUG TranslatePage] pendingText 变化:', pendingText);
     if (pendingText) {
+      console.log('[DEBUG TranslatePage] 设置源文本并开始翻译');
       setSourceText(pendingText);
       doTranslate(pendingText).finally(() => {
         onPendingTextProcessed?.();

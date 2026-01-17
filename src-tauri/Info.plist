@@ -2,7 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- 设置为后台代理应用（LSUIElement） -->
     <key>LSUIElement</key>
     <true/>
+
+    <!-- 允许作为辅助功能应用运行 -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>Quick Translation 需要辅助功能权限来监听全局快捷键和模拟键盘操作</string>
+
+    <!-- 绑定辅助功能 -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Quick Translation 需要此权限来执行快捷键操作</string>
 </dict>
 </plist>

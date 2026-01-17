@@ -76,7 +76,13 @@ export function TranslatePage({ pendingText, onPendingTextProcessed }: Translate
   // 处理从 App 传递来的划词翻译文本
   useEffect(() => {
     if (pendingText) {
+      // 重置所有状态，清空旧翻译结果
       setSourceText(pendingText);
+      setTargetText('');
+      setError(null);
+      setIsLoading(false);
+
+      // 开始新翻译
       doTranslate(pendingText).finally(() => {
         onPendingTextProcessed?.();
       });

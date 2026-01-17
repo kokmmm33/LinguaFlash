@@ -102,13 +102,16 @@ export function ShortcutInput({ value, onChange, onReset, otherShortcut, default
   const hasConflict = otherShortcut && displayValue === otherShortcut;
   const isDefault = value === defaultValue;
 
-  // 开始录入时暂停全局快捷键，结束时恢复
+  // 开始录入时暂停全局快捷键，结束时延迟恢复
   useEffect(() => {
     if (isRecording) {
       pauseShortcuts().catch(console.error);
     } else {
-      // 恢复快捷键
-      resumeShortcuts(allShortcuts.translate, allShortcuts.showWindow).catch(console.error);
+      // 延迟恢复快捷键，等待用户完全释放按键
+      const timer = setTimeout(() => {
+        resumeShortcuts(allShortcuts.translate, allShortcuts.showWindow).catch(console.error);
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isRecording, allShortcuts]);
 

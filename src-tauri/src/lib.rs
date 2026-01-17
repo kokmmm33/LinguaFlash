@@ -105,6 +105,13 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup, update_shortcuts, pause_shortcuts, resume_shortcuts])
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                // 阻止默认关闭行为，改为隐藏窗口
+                api.prevent_close();
+                let _ = window.hide();
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

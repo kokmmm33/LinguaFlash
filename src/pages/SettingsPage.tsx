@@ -3,6 +3,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { EngineSettings } from '../components/EngineSettings';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { ShortcutInput } from '../components/ShortcutInput';
+import { TermsSettings } from '../components/TermsSettings';
 import { clearHistory } from '../services/database';
 
 export function SettingsPage() {
@@ -160,6 +161,17 @@ export function SettingsPage() {
               跟随系统
             </button>
           </div>
+        </div>
+      </section>
+
+      {/* 术语表区域 */}
+      <section>
+        <h2 className="text-lg font-semibold mb-3">术语表</h2>
+        <p className="text-sm text-[var(--text-secondary)] mb-3">
+          添加不需要翻译或需要固定译法的专业名词
+        </p>
+        <div className="p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border)]">
+          <TermsSettings />
         </div>
       </section>
 

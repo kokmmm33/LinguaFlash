@@ -17,6 +17,41 @@ export async function initDatabase(): Promise<void> {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // 翻译缓存表
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS translation_cache (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source_text TEXT NOT NULL,
+      translated_text TEXT NOT NULL,
+      source_lang VARCHAR(10) NOT NULL,
+      target_lang VARCHAR(10) NOT NULL,
+      engine VARCHAR(50) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      last_used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      hit_count INTEGER DEFAULT 1,
+      UNIQUE(source_text, source_lang, target_lang, engine)
+    )
+  `);
+
+  await db.execute(`
+    CREATE INDEX IF NOT EXISTS idx_cache_lookup
+    ON translation_cache(source_text, source_lang, target_lang, engine)
+  `);
+
+  // 术语表
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS terms (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      term TEXT NOT NULL UNIQUE,
+      translation TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await db.execute(`
+    CREATE INDEX IF NOT EXISTS idx_term ON terms(term)
+  `);
 }
 
 export interface HistoryRecord {

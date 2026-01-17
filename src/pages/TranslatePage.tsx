@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { TextArea } from '../components/TextArea';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { translate } from '../services/translation';
@@ -36,9 +36,16 @@ export function TranslatePage({ pendingText, onPendingTextProcessed }: Translate
   const setSourceLang = (lang: string) => setDefaultLanguages(lang, targetLang);
   const setTargetLang = (lang: string) => setDefaultLanguages(sourceLang, lang);
 
+  // 用于跟踪当前正在翻译的文本，防止旧结果覆盖新结果
+  const translatingTextRef = useRef<string | null>(null);
+
   // 执行翻译的核心逻辑
   const doTranslate = useCallback(async (text: string) => {
     if (!text.trim()) return;
+
+    // 标记当前正在翻译的文本
+    const currentText = text;
+    translatingTextRef.current = currentText;
 
     const engine = getDefaultEngine();
     if (!engine) {
@@ -55,36 +62,47 @@ export function TranslatePage({ pendingText, onPendingTextProcessed }: Translate
         source_lang: sourceLang,
         target_lang: targetLang,
       });
-      setTargetText(response.translated_text);
 
-      // 保存历史记录
-      await addRecord({
-        source_text: text,
-        translated_text: response.translated_text,
-        source_lang: sourceLang,
-        target_lang: targetLang,
-        engine: engine.engine_type,
-      });
+      // 只在返回的结果匹配当前输入时才更新（防止旧结果覆盖新结果）
+      if (translatingTextRef.current === currentText) {
+        setTargetText(response.translated_text);
+
+        // 保存历史记录
+        await addRecord({
+          source_text: text,
+          translated_text: response.translated_text,
+          source_lang: sourceLang,
+          target_lang: targetLang,
+          engine: engine.engine_type,
+        });
+      }
     } catch (e) {
-      setError(e as string);
-      setTargetText('');
+      if (translatingTextRef.current === currentText) {
+        setError(e as string);
+        setTargetText('');
+      }
     } finally {
-      setIsLoading(false);
+      if (translatingTextRef.current === currentText) {
+        setIsLoading(false);
+      }
     }
   }, [sourceLang, targetLang, getDefaultEngine, addRecord]);
 
   // 处理从 App 传递来的划词翻译文本
   useEffect(() => {
     if (pendingText) {
+      // 清空 pendingText 标记为已处理，防止重复处理
+      onPendingTextProcessed?.();
+
       // 重置所有状态，清空旧翻译结果
       setSourceText(pendingText);
       setTargetText('');
       setError(null);
       setIsLoading(false);
 
-      // 开始新翻译
-      doTranslate(pendingText).finally(() => {
-        onPendingTextProcessed?.();
+      // 等待一帧后再开始翻译，确保状态已更新
+      requestAnimationFrame(() => {
+        doTranslate(pendingText);
       });
     }
   }, [pendingText, doTranslate, onPendingTextProcessed]);

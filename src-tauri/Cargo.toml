@@ -25,6 +25,7 @@ tokio = { version = "1", features = ["full"] }
 enigo = "0.2"
 calamine = "0.24"
 rust_xlsxwriter = "0.64"
+lazy_static = "1.4"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = "0.23"

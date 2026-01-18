@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { Layout, Tab } from './components/Layout';
 import { TranslatePage } from './pages/TranslatePage';
+import { ExcelPage } from './pages/ExcelPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { initDatabase } from './services/database';
@@ -82,6 +83,7 @@ function App() {
             onPendingTextProcessed={clearPendingText}
           />
         )}
+        {activeTab === 'excel' && <ExcelPage />}
         {activeTab === 'history' && <HistoryPage />}
         {activeTab === 'settings' && <SettingsPage />}
       </div>

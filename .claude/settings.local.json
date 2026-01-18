@@ -25,7 +25,14 @@
       "Skill(superpowers:executing-plans)",
       "Skill(superpowers:finishing-a-development-branch)",
       "Bash(cargo test:*)",
-      "Bash(npm test)"
+      "Bash(npm test)",
+      "Skill(superpowers:systematic-debugging)",
+      "Skill(superpowers:systematic-debugging:*)",
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:brainstorming:*)",
+      "Bash(cargo doc:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
     ]
   }
 }

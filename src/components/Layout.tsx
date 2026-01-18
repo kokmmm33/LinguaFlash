@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 
-export type Tab = 'translate' | 'history' | 'settings';
+export type Tab = 'translate' | 'excel' | 'history' | 'settings';
 
 interface LayoutProps {
   activeTab: Tab;

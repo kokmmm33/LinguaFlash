@@ -1,4 +1,4 @@
-use calamine::{open_workbook, Reader, Xlsx, DataType};
+use calamine::{open_workbook, Reader, Xlsx, Data};
 use std::path::Path;
 use super::{ExcelInfo, SheetData, CellData};
 
@@ -20,7 +20,7 @@ pub fn get_excel_info(file_path: &str) -> Result<ExcelInfo, String> {
         if let Ok(range) = workbook.worksheet_range(sheet_name) {
             for row in range.rows() {
                 for cell in row {
-                    if let DataType::String(s) = cell {
+                    if let Data::String(s) = cell.clone() {
                         if !s.trim().is_empty() {
                             total_cells += 1;
                         }
@@ -51,12 +51,12 @@ pub fn read_excel(file_path: &str) -> Result<Vec<SheetData>, String> {
         if let Ok(range) = workbook.worksheet_range(&sheet_name) {
             for (row_idx, row) in range.rows().enumerate() {
                 for (col_idx, cell) in row.iter().enumerate() {
-                    if let DataType::String(s) = cell {
+                    if let Data::String(s) = cell.clone() {
                         if !s.trim().is_empty() {
                             cells.push(CellData {
                                 row: row_idx as u32,
                                 col: col_idx as u32,
-                                value: s.clone(),
+                                value: s,
                                 translated: None,
                             });
                         }

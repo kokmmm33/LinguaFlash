@@ -1,4 +1,5 @@
 mod clipboard;
+mod excel;
 mod popup;
 mod shortcut;
 mod translation;
@@ -81,6 +82,59 @@ fn resume_shortcuts(
     enable_shortcuts(&app, &translate, &show_window)
 }
 
+#[tauri::command]
+async fn get_excel_info(file_path: String) -> Result<excel::ExcelInfo, String> {
+    excel::reader::get_excel_info(&file_path)
+}
+
+#[tauri::command]
+async fn start_excel_translation(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    file_path: String,
+    source_lang: String,
+    target_lang: String,
+    config: translation::EngineConfig,
+    terms: Vec<excel::translator::Term>,
+    cache: std::collections::HashMap<String, String>,
+) -> Result<excel::ExcelTranslationResult, String> {
+    // 读取 Excel
+    let mut sheets = excel::reader::read_excel(&file_path)?;
+
+    // 翻译
+    let (translated_cells, cache_hits) = excel::translator::translate_sheets(
+        &app,
+        state.inner(),
+        &mut sheets,
+        &config,
+        &source_lang,
+        &target_lang,
+        &terms,
+        &cache,
+    ).await?;
+
+    let cancelled = excel::translator::is_cancelled();
+
+    // 写入新文件
+    let output_path = if !cancelled {
+        excel::writer::write_excel(&sheets, &file_path)?
+    } else {
+        String::new()
+    };
+
+    Ok(excel::ExcelTranslationResult {
+        output_path,
+        translated_cells,
+        cache_hits,
+        cancelled,
+    })
+}
+
+#[tauri::command]
+fn cancel_excel_translation() {
+    excel::translator::request_cancel();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let client = Arc::new(Client::new());
@@ -90,6 +144,7 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(AppState { client })
         .setup(|app| {
             // 创建系统托盘
@@ -104,7 +159,17 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![translate, test_engine_connection, close_popup, update_shortcuts, pause_shortcuts, resume_shortcuts])
+        .invoke_handler(tauri::generate_handler![
+            translate,
+            test_engine_connection,
+            close_popup,
+            update_shortcuts,
+            pause_shortcuts,
+            resume_shortcuts,
+            get_excel_info,
+            start_excel_translation,
+            cancel_excel_translation
+        ])
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 // 阻止默认关闭行为，改为隐藏窗口

@@ -257,7 +257,7 @@ export function SettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">版本</span>
-              <span>1.0.0</span>
+              <span>1.1.0</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">技术栈</span>

@@ -29,3 +29,6 @@ src-tauri/target/
 # Rust
 *.rs.bk
 Cargo.lock
+
+# Git worktrees
+.worktrees/

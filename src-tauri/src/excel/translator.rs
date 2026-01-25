@@ -168,7 +168,7 @@ fn emit_progress(
     total_cells: usize,
     cache_hits: usize,
 ) {
-    let _ = app.emit("excel-progress", TranslationProgress {
+    let _ = app.emit("excel-translation-progress", TranslationProgress {
         current_sheet: current_sheet + 1,
         total_sheets,
         sheet_name: sheet_name.to_string(),

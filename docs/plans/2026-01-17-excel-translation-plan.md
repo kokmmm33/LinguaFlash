@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** 为 TTime v1.1 实现 Excel 文件翻译功能，支持批量翻译、缓存、术语表管理
+**Goal:** 为 LinguaFlash v1.1 实现 Excel 文件翻译功能，支持批量翻译、缓存、术语表管理
 
 **Architecture:** Rust 后端处理 Excel 文件（calamine 读取 + rust_xlsxwriter 写入），前端展示进度和管理术语表，SQLite 存储翻译缓存和术语表
 
@@ -114,7 +114,7 @@ let db: Database | null = null;
 
 async function getDb(): Promise<Database> {
   if (!db) {
-    db = await Database.load('sqlite:ttime.db');
+    db = await Database.load('sqlite:linguaflash.db');
   }
   return db;
 }
@@ -736,7 +736,7 @@ let db: Database | null = null;
 
 async function getDb(): Promise<Database> {
   if (!db) {
-    db = await Database.load('sqlite:ttime.db');
+    db = await Database.load('sqlite:linguaflash.db');
   }
   return db;
 }
@@ -1870,7 +1870,7 @@ git commit -m "chore: bump version to 1.1.0"
 
 ## 实现总结
 
-完成以上 20 个任务后，TTime v1.1 将具备完整的 Excel 翻译功能：
+完成以上 20 个任务后，LinguaFlash v1.1 将具备完整的 Excel 翻译功能：
 
 1. ✅ 侧边栏新增 Excel 标签页入口
 2. ✅ Rust 后端处理 Excel 文件（calamine 读取 + rust_xlsxwriter 写入）

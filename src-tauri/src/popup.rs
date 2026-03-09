@@ -129,7 +129,7 @@ pub async fn show_popup(app: &AppHandle, text: String) -> Result<(), String> {
             POPUP_WINDOW_LABEL,
             WebviewUrl::App("popup.html".into()),
         )
-        .title("TTime 翻译")
+        .title("LinguaFlash 翻译")
         .inner_size(POPUP_WIDTH, POPUP_HEIGHT)
         .position(x as f64, y as f64)
         .decorations(false) // 无边框

@@ -1,4 +1,4 @@
-# TTime 翻译软件实现计划
+# LinguaFlash 翻译软件实现计划
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
@@ -107,8 +107,8 @@ git commit -m "feat: initialize Tauri + React + TypeScript project with Tailwind
 ```json
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "TTime",
-  "identifier": "com.ttime.app",
+  "productName": "LinguaFlash",
+  "identifier": "com.linguaflash.app",
   "version": "0.1.0",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -121,7 +121,7 @@ git commit -m "feat: initialize Tauri + React + TypeScript project with Tailwind
     "windows": [
       {
         "label": "main",
-        "title": "TTime",
+        "title": "LinguaFlash",
         "width": 600,
         "height": 500,
         "resizable": true,
@@ -278,7 +278,7 @@ export function TitleBar() {
       className="h-10 flex items-center justify-between px-4 bg-[var(--bg-secondary)] select-none"
     >
       <div data-tauri-drag-region className="flex items-center gap-2">
-        <span className="text-sm font-medium">TTime</span>
+        <span className="text-sm font-medium">LinguaFlash</span>
       </div>
       <div className="flex items-center gap-1">
         <button
@@ -972,7 +972,7 @@ pub fn run() {
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    ttime_lib::run()
+    linguaflash_lib::run()
 }
 ```
 
@@ -1112,7 +1112,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
     }),
     {
-      name: 'ttime-settings',
+      name: 'linguaflash-settings',
     }
   )
 );
@@ -1287,7 +1287,7 @@ import Database from '@tauri-apps/plugin-sql';
 let db: Database | null = null;
 
 export async function initDatabase(): Promise<void> {
-  db = await Database.load('sqlite:ttime.db');
+  db = await Database.load('sqlite:linguaflash.db');
 
   // 创建历史记录表
   await db.execute(`
@@ -2081,7 +2081,7 @@ export function SettingsPage() {
         <section>
           <h2 className="text-lg font-medium mb-4">关于</h2>
           <div className="text-sm text-[var(--text-secondary)]">
-            <p>TTime v0.1.0</p>
+            <p>LinguaFlash v0.1.0</p>
             <p>简洁高效的跨平台翻译软件</p>
           </div>
         </section>
@@ -2572,7 +2572,7 @@ git commit -m "feat: implement global shortcuts for text selection translation"
 
 ## 总结
 
-完成以上任务后，TTime 将具备以下核心功能：
+完成以上任务后，LinguaFlash 将具备以下核心功能：
 
 - [x] Tauri + React + TypeScript 项目架构
 - [x] 简约现代 UI（深浅色主题）

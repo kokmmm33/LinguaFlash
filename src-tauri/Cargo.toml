@@ -1,12 +1,12 @@
 [package]
-name = "quick-translation"
+name = "linguaflash"
 version = "1.1.0"
-description = "Quick Translation - Cross-platform Translation Software"
+description = "LinguaFlash - Cross-platform Translation Software"
 authors = ["you"]
 edition = "2021"
 
 [lib]
-name = "quick_translation_lib"
+name = "linguaflash_lib"
 crate-type = ["staticlib", "cdylib", "lib"]
 
 [build-dependencies]

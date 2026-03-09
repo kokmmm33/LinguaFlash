@@ -3,7 +3,7 @@ import Database from '@tauri-apps/plugin-sql';
 let db: Database | null = null;
 
 export async function initDatabase(): Promise<void> {
-  db = await Database.load('sqlite:ttime.db');
+  db = await Database.load('sqlite:linguaflash.db');
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS history (

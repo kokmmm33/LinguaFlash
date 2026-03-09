@@ -9,7 +9,7 @@ export function TitleBar() {
       className="h-10 flex items-center justify-between px-4 bg-[var(--bg-secondary)] select-none"
     >
       <div data-tauri-drag-region className="flex items-center gap-2">
-        <span className="text-sm font-medium">Quick Translation</span>
+        <span className="text-sm font-medium">LinguaFlash</span>
       </div>
       <div className="flex items-center gap-1">
         <button

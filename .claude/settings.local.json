@@ -32,7 +32,14 @@
       "Skill(superpowers:brainstorming:*)",
       "Bash(cargo doc:*)",
       "mcp__context7__resolve-library-id",
-      "mcp__context7__query-docs"
+      "mcp__context7__query-docs",
+      "Bash(git checkout:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git worktree:*)",
+      "Bash(cargo build:*)"
     ]
   }
 }

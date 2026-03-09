@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** 移除按 ESC 键隐藏 TTime 应用窗口的功能
+**Goal:** 移除按 ESC 键隐藏 LinguaFlash 应用窗口的功能
 
 **Architecture:** 简单地从 App.tsx 中删除 ESC 键事件监听器
 
@@ -48,7 +48,7 @@ npm run tauri dev
 ```
 
 测试场景：
-1. 打开 TTime 应用窗口
+1. 打开 LinguaFlash 应用窗口
 2. 按 `Escape` 键
 3. **预期结果：** 窗口应该保持显示，不会隐藏
 4. 窗口仍可通过其他方式关闭（如关闭按钮、`Cmd+W` 等）

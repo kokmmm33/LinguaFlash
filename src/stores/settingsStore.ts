@@ -90,7 +90,7 @@ export const useSettingsStore = create<SettingsState>()(
       resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
     }),
     {
-      name: 'ttime-settings',
+      name: 'linguaflash-settings',
     }
   )
 );

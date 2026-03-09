@@ -8,10 +8,10 @@
 
     <!-- 允许作为辅助功能应用运行 -->
     <key>NSAccessibilityUsageDescription</key>
-    <string>Quick Translation 需要辅助功能权限来监听全局快捷键和模拟键盘操作</string>
+    <string>LinguaFlash 需要辅助功能权限来监听全局快捷键和模拟键盘操作</string>
 
     <!-- 绑定辅助功能 -->
     <key>NSAppleEventsUsageDescription</key>
-    <string>Quick Translation 需要此权限来执行快捷键操作</string>
+    <string>LinguaFlash 需要此权限来执行快捷键操作</string>
 </dict>
 </plist>

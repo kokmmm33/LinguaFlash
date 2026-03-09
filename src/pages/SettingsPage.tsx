@@ -253,7 +253,7 @@ export function SettingsPage() {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">应用名称</span>
-              <span>Quick Translation</span>
+              <span>LinguaFlash</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">版本</span>
